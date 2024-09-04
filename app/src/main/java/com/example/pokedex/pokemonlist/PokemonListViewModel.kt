@@ -4,10 +4,12 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.capitalize
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.palette.graphics.Palette
 import com.example.pokedex.data.models.PokedexListEntry
 import com.example.pokedex.repository.PokemonRepository
@@ -25,10 +27,14 @@ class PokemonListViewModel @Inject constructor(
 
     private var currentPage = 0
 
-    var pokemonList = mutableStateOf<List<PokedexListEntry>>(listOf())
+    var pokemonList = mutableListOf<PokedexListEntry>()
+    val filteredPokemonList = mutableStateOf<List<PokedexListEntry>>(listOf())
+
     var loadError = mutableStateOf("")
     var isLoading = mutableStateOf(false)
     var endReached = mutableStateOf(false)
+
+    var searchText = mutableStateOf("")
 
     init {
         loadPokemonPaginated()
@@ -36,8 +42,11 @@ class PokemonListViewModel @Inject constructor(
 
     fun loadPokemonPaginated() {
         viewModelScope.launch {
+
             isLoading.value = true
+
             val result = repository.getPokemonList(PAGE_SIZE, currentPage * PAGE_SIZE)
+
             when (result) {
                 is Resource.Success -> {
                     endReached.value = currentPage * PAGE_SIZE >= result.data!!.count
@@ -51,11 +60,15 @@ class PokemonListViewModel @Inject constructor(
                             "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${number}.png"
                         PokedexListEntry(entry.name.capitalize(Locale.ROOT), url, number.toInt())
                     }
+
                     currentPage++
 
                     loadError.value = ""
                     isLoading.value = false
-                    pokemonList.value += pokedexEntries
+
+                    pokemonList.addAll(pokedexEntries)
+                    filteredPokemonList.value = pokemonList
+
                 }
 
                 is Resource.Error -> {
@@ -75,6 +88,19 @@ class PokemonListViewModel @Inject constructor(
         Palette.from(bitMap).generate { palette ->
             palette?.dominantSwatch?.rgb?.let { colorValue ->
                 onFinish(Color(colorValue))
+            }
+        }
+    }
+
+    fun filterPokemonListByNamePrefix(prefix: String) {
+
+        searchText.value = prefix
+
+        if (prefix.isEmpty()) {
+            filteredPokemonList.value = pokemonList
+        } else {
+            filteredPokemonList.value = pokemonList.filter {
+                it.pokemonName.startsWith(prefix, ignoreCase = true)
             }
         }
     }

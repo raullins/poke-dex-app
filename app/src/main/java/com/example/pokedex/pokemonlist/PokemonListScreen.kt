@@ -1,6 +1,5 @@
 package com.example.pokedex.pokemonlist
 
-import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -35,7 +33,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
@@ -49,14 +46,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.Coil
-import coil.Coil.imageLoader
-import coil.ImageLoader
 import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
 import coil.imageLoader
 import coil.request.ImageRequest
-import coil.util.CoilUtils
 import com.example.pokedex.R
 import com.example.pokedex.data.models.PokedexListEntry
 import com.example.pokedex.data.remote.responses.PokemonList
@@ -64,12 +56,18 @@ import com.example.pokedex.ui.theme.RobotoCondensed
 
 @Composable
 fun PokemonListScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: PokemonListViewModel = hiltViewModel()
 ) {
+
+    val searchText = remember { mutableStateOf("") }
+    val pokemonList by viewModel.filteredPokemonList
+
     Surface(
         color = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxSize()
     ) {
+
         Column {
             Spacer(modifier = Modifier.height(20.dp))
             Image(
@@ -79,15 +77,20 @@ fun PokemonListScreen(
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
             )
+
             SearchBar(
                 hint = "Procurar...",
+                text = viewModel.searchText.value,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
+                    .padding(16.dp),
+                onSearch = { query ->
+                    viewModel.filterPokemonListByNamePrefix(query)
+                }
+            )
 
-            }
             Spacer(modifier = Modifier.height(16.dp))
+
             PokemonList(navController = navController)
         }
     }
@@ -97,33 +100,34 @@ fun PokemonListScreen(
 fun SearchBar(
     modifier: Modifier = Modifier,
     hint: String = "",
-    onSearch: (String) -> Unit = {}
+    onSearch: (String) -> Unit,
+    text: String
 ) {
-    var text by remember {
-        mutableStateOf("")
-    }
 
-    var isHintDisplayed by remember {
-        mutableStateOf(hint != "")
-    }
+    val isHintDisplayed = text.isEmpty()
 
     Box(modifier = modifier) {
+
         BasicTextField(
             value = text,
+
             onValueChange = {
-                text = it
                 onSearch(it)
             },
+
             maxLines = 1,
+
             singleLine = true,
+
             textStyle = TextStyle(color = Color.Black),
+
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(5.dp, CircleShape)
                 .background(Color.White, CircleShape)
                 .padding(horizontal = 20.dp, vertical = 12.dp)
                 .onFocusChanged { focusState ->
-                    isHintDisplayed = !focusState.isFocused
+                    isHintDisplayed == !focusState.isFocused && text.isEmpty()
                 }
         )
         if (isHintDisplayed) {
@@ -142,10 +146,12 @@ fun SearchBar(
 @Composable
 fun PokemonList(
     navController: NavController,
-    viewModel: PokemonListViewModel = hiltViewModel()
+    viewModel: PokemonListViewModel = hiltViewModel(),
+//    pokemonList: List<PokedexListEntry>
 ) {
+
     val pokemonList by remember {
-        viewModel.pokemonList
+        viewModel.filteredPokemonList
     }
 
     val endReached by remember {
@@ -161,16 +167,20 @@ fun PokemonList(
     }
 
     LazyColumn(contentPadding = PaddingValues(16.dp)) {
+
         val itemCount = if (pokemonList.size % 2 == 0) {
             pokemonList.size / 2
         } else {
             pokemonList.size / 2 + 1
         }
-        items(itemCount) {
-            if (it >= itemCount - 1 && !endReached) {
+
+        items(itemCount) { index ->
+            // Carregue mais Pokémon quando atingir o final da lista e a pesquisa não estiver ativa
+            if (index >= itemCount - 1 && !viewModel.endReached.value && viewModel.filteredPokemonList.value.size == viewModel.pokemonList.size) {
+                // Certifique-se de que apenas carrega mais quando não há filtro aplicado
                 viewModel.loadPokemonPaginated()
             }
-            PokedexRow(rowIndex = it, entries = pokemonList, navController = navController)
+            PokedexRow(rowIndex = index, entries = pokemonList, navController = navController)
         }
     }
 
