@@ -23,8 +23,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,6 +55,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.pokedex.R
+import com.example.pokedex.data.local.FavoritePokemon
 import com.example.pokedex.data.remote.responses.Pokemon
 import com.example.pokedex.data.remote.responses.Type
 import com.example.pokedex.util.Resource
@@ -75,6 +79,8 @@ fun PokemonDetailScreen(
         value = viewModel.getPokemonInfo(pokemonName)
     }.value
 
+//    val isFavorite = viewModel.isPokemonFavorite(pokemonInfo.data!!.id)
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -87,8 +93,33 @@ fun PokemonDetailScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.2f)
-                .align(Alignment.TopCenter) // Correto aqui, pois agora está dentro de uma Box
+                .align(Alignment.TopCenter)
         )
+
+//        IconButton(onClick = {
+//            if (isFavorite) {
+//                viewModel.removePokemonFromFavorites(
+//                    FavoritePokemon(
+//                        pokemonInfo.data.id,
+//                        pokemonInfo.data.name,
+//                        pokemonInfo.data.sprites
+//                    )
+//                )
+//            } else {
+//                viewModel.addPokemonToFavorites(
+//                    FavoritePokemon(
+//                        pokemonInfo.data.id,
+//                        pokemonInfo.data.name,
+//                        pokemonInfo.data.sprites
+//                    )
+//                )
+//            }
+//        }) {
+//            Icon(
+//                imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+//                contentDescription = null
+//            )
+//        }
 
         PokemonDetailStateWrapper(
             pokemonInfo = pokemonInfo,
@@ -394,8 +425,11 @@ fun PokemonBaseStats(
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth().fillMaxHeight()
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
     ) {
+
         Text(
             text = "Stats Básicos: ",
             fontSize = 20.sp,
@@ -413,6 +447,7 @@ fun PokemonBaseStats(
                 statColor = parseStatToColor(stat),
                 animationDelay = i * animationDelayPerItem
             )
+
             Spacer(modifier = Modifier.height(8.dp))
         }
     }

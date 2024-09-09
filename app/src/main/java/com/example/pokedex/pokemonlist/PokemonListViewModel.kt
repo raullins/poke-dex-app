@@ -11,24 +11,36 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.palette.graphics.Palette
+import com.example.pokedex.data.local.FavoritePokemon
 import com.example.pokedex.data.models.PokedexListEntry
+import com.example.pokedex.repository.FavoritePokemonRepository
 import com.example.pokedex.repository.PokemonRepository
 import com.example.pokedex.util.Constants.PAGE_SIZE
 import com.example.pokedex.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class PokemonListViewModel @Inject constructor(
-    private val repository: PokemonRepository
+    private val repository: PokemonRepository,
+    private val favoritePokemonRepository: FavoritePokemonRepository
 ) : ViewModel() {
 
     private var currentPage = 0
 
     var pokemonList = mutableListOf<PokedexListEntry>()
     val filteredPokemonList = mutableStateOf<List<PokedexListEntry>>(listOf())
+
+    val favoritePokemonList = favoritePokemonRepository.getAllFavoritePokemons().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     var loadError = mutableStateOf("")
     var isLoading = mutableStateOf(false)
@@ -102,6 +114,22 @@ class PokemonListViewModel @Inject constructor(
             filteredPokemonList.value = pokemonList.filter {
                 it.pokemonName.startsWith(prefix, ignoreCase = true)
             }
+        }
+    }
+
+    fun isPokemonFavorite(pokemonId: Int): Boolean {
+        return favoritePokemonList.value.any { it.number == pokemonId }
+    }
+
+    fun addPokemonToFavorites(pokemon: FavoritePokemon) {
+        viewModelScope.launch(Dispatchers.IO) {
+            favoritePokemonRepository.addFavoritePokemon(pokemon)
+        }
+    }
+
+    fun removePokemonFromFavorites(pokemon: FavoritePokemon) {
+        viewModelScope.launch(Dispatchers.IO) {
+            favoritePokemonRepository.removeFavoritePokemon(pokemon)
         }
     }
 }

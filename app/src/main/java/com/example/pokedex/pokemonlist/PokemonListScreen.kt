@@ -19,8 +19,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -50,6 +55,7 @@ import coil.compose.AsyncImage
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.example.pokedex.R
+import com.example.pokedex.data.local.FavoritePokemon
 import com.example.pokedex.data.models.PokedexListEntry
 import com.example.pokedex.data.remote.responses.PokemonList
 import com.example.pokedex.ui.theme.RobotoCondensed
@@ -230,6 +236,8 @@ fun PokedexEntry(
         }
     }
 
+    val isFavorite = viewModel.isPokemonFavorite(entry.number)
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
@@ -266,8 +274,37 @@ fun PokedexEntry(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 10.dp)
+                    .padding(bottom = 1.dp)
             )
+
+            IconButton(
+                onClick = {
+                    if (isFavorite) {
+                        viewModel.removePokemonFromFavorites(
+                            FavoritePokemon(
+                                entry.number,
+                                entry.pokemonName,
+                                entry.imageUrl
+                            )
+                        )
+                    } else {
+                        viewModel.addPokemonToFavorites(
+                            FavoritePokemon(
+                                entry.number,
+                                entry.pokemonName,
+                                entry.imageUrl
+                            )
+                        )
+                    }
+                }
+            ) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Favoritar Pokémon",
+                    tint = if (isFavorite) Color.Red else Color.Gray
+                )
+            }
+
         }
     }
 }
