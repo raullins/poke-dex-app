@@ -96,9 +96,9 @@ const val BASE_URL = "https://pokeapi.co/api/v2/"
 
 **Pesquisar Pokémon**: Use a barra de pesquisa para filtrar Pokémon por nome;
 
-**Ver detalhes do Pokémon**: Clique na box refente ao Pokémon para vizualizar mais detalhes sobre ele;
+**Ver detalhes do Pokémon**: Clique na box referente ao Pokémon para vizualizar mais detalhes sobre ele;
 
-**Favoritar Pokémon**: Clique no ícone de estrela na tela de detalhes para favoritar um Pokémon(**Em desenvolvimento**);
+**Favoritar Pokémon**: Clique no ícone de coração na tela de detalhes para favoritar um Pokémon(**Em desenvolvimento**);
 
 **Visualizar Favoritos**: Acesse a tela de favoritos para visualizar seus Pokémon salvos offline(**Em desenvolvimento**).
 
