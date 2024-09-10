@@ -29,13 +29,13 @@ __Offline__: Salva os Pokémon favoritos localmente para acesso offline(Em desen
 
 `MVVM`: Padrão de arquitetura utilizado no desenvolvimento;
 
-`Room`Room: Biblioteca de persistência para salvar dados localmente;
+`Room`: Biblioteca de persistência para salvar dados localmente;
 
-`Retrofit`Retrofit: Biblioteca para consumo de APIs REST;
+`Retrofit`: Biblioteca para consumo de APIs REST;
 
-`Hilt`Hilt: Biblioteca para injeção de dependências;
+`Hilt`: Biblioteca para injeção de dependências;
 
-`Coroutines e Flow`Coroutines e Flow: Para operações assíncronas e manipulação de dados em tempo real;
+`Coroutines e Flow`: Para operações assíncronas e manipulação de dados em tempo real;
 
 
  <br>
