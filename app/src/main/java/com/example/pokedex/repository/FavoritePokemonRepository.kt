@@ -19,7 +19,5 @@ class FavoritePokemonRepository @Inject constructor(
         favoritePokemonDao.deleteFavoritePokemon(pokemon)
     }
 
-    fun getAllFavoritePokemons(): Flow<List<FavoritePokemon>> {
-        return favoritePokemonDao.getAllFavoritePokemon()
-    }
+    fun getAllFavoritePokemons(): Flow<List<FavoritePokemon>> = favoritePokemonDao.getAllFavoritePokemon()
 }

@@ -25,12 +25,13 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +45,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -57,7 +59,6 @@ import coil.request.ImageRequest
 import com.example.pokedex.R
 import com.example.pokedex.data.local.FavoritePokemon
 import com.example.pokedex.data.models.PokedexListEntry
-import com.example.pokedex.data.remote.responses.PokemonList
 import com.example.pokedex.ui.theme.RobotoCondensed
 
 @Composable
@@ -66,8 +67,11 @@ fun PokemonListScreen(
     viewModel: PokemonListViewModel = hiltViewModel()
 ) {
 
-    val searchText = remember { mutableStateOf("") }
-    val pokemonList by viewModel.filteredPokemonList
+//    val searchText = remember { mutableStateOf("") }
+//    val pokemonList by viewModel.filteredPokemonList
+//
+//    // Observe a lista de favoritos como um estado
+//    val favoritePokemonList by viewModel.favoritePokemonList.collectAsState()
 
     Surface(
         color = MaterialTheme.colorScheme.background,
@@ -95,7 +99,7 @@ fun PokemonListScreen(
                 }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             PokemonList(navController = navController)
         }
@@ -236,7 +240,9 @@ fun PokedexEntry(
         }
     }
 
-    val isFavorite = viewModel.isPokemonFavorite(entry.number)
+    // Observe o estado reativo do favorito
+    var isFavorite by remember { mutableStateOf(viewModel.isPokemonFavorite(entry.number)) }
+
 
     Box(
         contentAlignment = Alignment.Center,
@@ -277,8 +283,9 @@ fun PokedexEntry(
                     .padding(bottom = 1.dp)
             )
 
-            IconButton(
-                onClick = {
+            IconToggleButton(
+                checked = isFavorite,
+                onCheckedChange = {
                     if (isFavorite) {
                         viewModel.removePokemonFromFavorites(
                             FavoritePokemon(
@@ -287,6 +294,7 @@ fun PokedexEntry(
                                 entry.imageUrl
                             )
                         )
+                        isFavorite = !isFavorite
                     } else {
                         viewModel.addPokemonToFavorites(
                             FavoritePokemon(
@@ -295,13 +303,14 @@ fun PokedexEntry(
                                 entry.imageUrl
                             )
                         )
+                        isFavorite = !isFavorite
                     }
                 }
             ) {
                 Icon(
                     imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = "Favoritar Pokémon",
-                    tint = if (isFavorite) Color.Red else Color.Gray
+                    tint = if (isFavorite) colorResource(id = R.color.red) else colorResource(id = R.color.gray)
                 )
             }
 

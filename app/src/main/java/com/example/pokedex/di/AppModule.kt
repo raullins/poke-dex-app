@@ -1,7 +1,11 @@
 package com.example.pokedex.di
 
+import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.pokedex.data.local.AppDataBase
 import com.example.pokedex.data.local.Converters
 import com.example.pokedex.data.local.FavoritePokemonDAO
@@ -40,12 +44,16 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): AppDataBase {
+    fun provideAppDataBase(
+        application: Application
+    ): AppDataBase {
         return Room.databaseBuilder(
-            context.applicationContext,
-            AppDataBase::class.java,
-            "pokedex_database"
-        ).build()
+            context = application,
+            klass = AppDataBase::class.java,
+            name = "pokedex_database"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides

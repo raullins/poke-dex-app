@@ -3,13 +3,11 @@ package com.example.pokedex.pokemonlist
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.capitalize
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.palette.graphics.Palette
 import com.example.pokedex.data.local.FavoritePokemon
 import com.example.pokedex.data.models.PokedexListEntry
@@ -19,8 +17,8 @@ import com.example.pokedex.util.Constants.PAGE_SIZE
 import com.example.pokedex.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
@@ -36,11 +34,14 @@ class PokemonListViewModel @Inject constructor(
     var pokemonList = mutableListOf<PokedexListEntry>()
     val filteredPokemonList = mutableStateOf<List<PokedexListEntry>>(listOf())
 
-    val favoritePokemonList = favoritePokemonRepository.getAllFavoritePokemons().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+//    private val _favoritePokemonList = favoritePokemonRepository.getAllFavoritePokemons().stateIn(
+//        scope = viewModelScope,
+//        started = SharingStarted.WhileSubscribed(5000),
+//        initialValue = emptyList()
+//    )
+
+    private val _favoritePokemonList = MutableStateFlow<List<FavoritePokemon>>(emptyList())
+    val favoritePokemonList: StateFlow<List<FavoritePokemon>> = _favoritePokemonList
 
     var loadError = mutableStateOf("")
     var isLoading = mutableStateOf(false)
@@ -50,6 +51,7 @@ class PokemonListViewModel @Inject constructor(
 
     init {
         loadPokemonPaginated()
+        loadFavorites()
     }
 
     fun loadPokemonPaginated() {
@@ -117,19 +119,34 @@ class PokemonListViewModel @Inject constructor(
         }
     }
 
+    private fun loadFavorites() {
+        viewModelScope.launch(Dispatchers.IO) {
+            favoritePokemonRepository.getAllFavoritePokemons().collect {
+                _favoritePokemonList.value = it
+            }
+        }
+    }
+
     fun isPokemonFavorite(pokemonId: Int): Boolean {
-        return favoritePokemonList.value.any { it.number == pokemonId }
+        return _favoritePokemonList.value.any { it.number == pokemonId }
     }
 
     fun addPokemonToFavorites(pokemon: FavoritePokemon) {
         viewModelScope.launch(Dispatchers.IO) {
-            favoritePokemonRepository.addFavoritePokemon(pokemon)
+            try {
+                favoritePokemonRepository.addFavoritePokemon(pokemon)
+                Log.d("Favorite", "Pokemon favoritado com sucesso: ${pokemon.pokemonName}")
+            } catch (e: Exception) {
+                Log.e("Favorite", "Erro ao favoritar o Pokémon", e)
+            }
+            loadFavorites()
         }
     }
 
     fun removePokemonFromFavorites(pokemon: FavoritePokemon) {
         viewModelScope.launch(Dispatchers.IO) {
             favoritePokemonRepository.removeFavoritePokemon(pokemon)
+            loadFavorites()
         }
     }
 }
