@@ -3,7 +3,7 @@
 ![Badge em Desenvolvimento](http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=GREEN&style=for-the-badge)
 
 
-Aplicativo Android desenvolvido em Kotlin que utiliza a arquitetura `MVVM`, além das ferramentas `Jetpack Compose`, `Room`, `Hilt` e `Retrofit` para consumir dados da API PokeApi. O aplicativo permite aos usuários visualizar uma lista de Pokémon, pesquisar por nome e abrir os detalhes dos Pokémon. As features de favoritar seus Pokémon preferidos e acessar seus favoritos offline ainda estão em desenvolvimento.
+Aplicativo Android desenvolvido em Kotlin que utiliza a arquitetura `MVVM`, além das ferramentas `Jetpack Compose`, `Room`, `Hilt` e `Retrofit` para consumir dados da API PokeApi. O aplicativo permite aos usuários visualizar uma lista de Pokémon, pesquisar por nome e abrir os detalhes dos Pokémon. As features de favoritar seus Pokémon preferidos e acessar seus favoritos offline ainda estão em desenvolvimento. As features de favoritar e acessar seus favoritos não estão mais em desenvolvimento, pois foram concluídas!
 
  <br>
  
@@ -13,11 +13,11 @@ Aplicativo Android desenvolvido em Kotlin que utiliza a arquitetura `MVVM`, alé
 
 **Pesquisa de Pokémon**: Permite a busca de Pokémon pelo nome;
 
-__Favoritar Pokémon__: Permite adicionar Pokémon aos favoritos e visualizá-los offline(Em desenvolvimento);
+__Favoritar Pokémon__: Permite adicionar Pokémon aos favoritos e visualizá-los offline;
 
 __Visualização de Detalhes__: Exibe detalhes sobre cada Pokémon, incluindo imagens e estatísticas;
 
-__Offline__: Salva os Pokémon favoritos localmente para acesso offline(Em desenvolvimento);
+__Offline__: Salva os Pokémon favoritos localmente para acesso offline;
 
  <br>
  
