@@ -18,7 +18,10 @@ import com.example.pokedex.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
@@ -41,7 +44,9 @@ class PokemonListViewModel @Inject constructor(
 //    )
 
     private val _favoritePokemonList = MutableStateFlow<List<FavoritePokemon>>(emptyList())
-    val favoritePokemonList: StateFlow<List<FavoritePokemon>> = _favoritePokemonList
+    val favoritePokemonList: StateFlow<List<FavoritePokemon>> =
+        _favoritePokemonList // Assume que você já tem isso
+    val favoritePokemonFilteredList = mutableStateOf<List<FavoritePokemon>>(listOf())
 
     var loadError = mutableStateOf("")
     var isLoading = mutableStateOf(false)
@@ -119,12 +124,41 @@ class PokemonListViewModel @Inject constructor(
         }
     }
 
+    fun filterFavoritePokemonList(prefix: String) {
+
+        searchText.value = prefix
+
+        if (prefix.isEmpty()) {
+            favoritePokemonFilteredList.value = _favoritePokemonList.value
+        } else {
+            favoritePokemonFilteredList.value = _favoritePokemonList.value.filter {
+                it.pokemonName.startsWith(prefix, ignoreCase = true)
+            }
+        }
+    }
+
     private fun loadFavorites() {
         viewModelScope.launch(Dispatchers.IO) {
             favoritePokemonRepository.getAllFavoritePokemons().collect {
                 _favoritePokemonList.value = it
             }
         }
+    }
+
+    fun getFavoritePokemonAsPokedexListEntries(): StateFlow<List<PokedexListEntry>> {
+        return favoritePokemonList.map { favoriteList ->
+            favoriteList.map { favorite ->
+                PokedexListEntry(
+                    pokemonName = favorite.pokemonName,
+                    imageUrl = favorite.imageUrl,
+                    number = favorite.number
+                )
+            }
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            emptyList()
+        )
     }
 
     fun isPokemonFavorite(pokemonId: Int): Boolean {
@@ -139,14 +173,14 @@ class PokemonListViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("Favorite", "Erro ao favoritar o Pokémon", e)
             }
-            loadFavorites()
+            //loadFavorites()
         }
     }
 
     fun removePokemonFromFavorites(pokemon: FavoritePokemon) {
         viewModelScope.launch(Dispatchers.IO) {
             favoritePokemonRepository.removeFavoritePokemon(pokemon)
-            loadFavorites()
+            //loadFavorites()
         }
     }
 }

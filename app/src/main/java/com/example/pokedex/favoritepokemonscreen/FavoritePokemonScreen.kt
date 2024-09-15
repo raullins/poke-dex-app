@@ -1,4 +1,4 @@
-package com.example.pokedex.pokemonlist
+package com.example.pokedex.favoritepokemonscreen
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,11 +22,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -60,10 +62,12 @@ import coil.request.ImageRequest
 import com.example.pokedex.R
 import com.example.pokedex.data.local.FavoritePokemon
 import com.example.pokedex.data.models.PokedexListEntry
+import com.example.pokedex.pokemonlist.PokedexRow
+import com.example.pokedex.pokemonlist.PokemonListViewModel
 import com.example.pokedex.ui.theme.RobotoCondensed
 
 @Composable
-fun PokemonListScreen(
+fun FavoritePokemonListScreen(
     navController: NavController,
     viewModel: PokemonListViewModel = hiltViewModel()
 ) {
@@ -89,36 +93,55 @@ fun PokemonListScreen(
                     .align(Alignment.CenterHorizontally)
             )
 
+            Spacer(modifier = Modifier.height(5.dp))
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 28.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack, // Usar ícone padrão para evitar problemas com espelhamento
+                        contentDescription = "Voltar",
+                        tint = Color.White, // Define a cor branca diretamente
+                        modifier = Modifier
+                            .size(42.dp)
+                            //.offset(16.dp, 16.dp) // Define o deslocamento do ícone
+                            .clickable {
+                                navController.popBackStack() // Ação de clique para voltar
+                            }
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(4.dp))
+
                 SearchBar(
                     hint = "Procurar...",
                     text = viewModel.searchText.value,
                     modifier = Modifier.weight(1f).height(42.dp), // Fazer a SearchBar ocupar o máximo de espaço
                     onSearch = { query ->
-                        viewModel.filterPokemonListByNamePrefix(query)
+                        viewModel.filterFavoritePokemonList(query)
                     }
                 )
 
-                Spacer(modifier = Modifier.width(8.dp)) // Espaçamento entre o botão e a barra de pesquisa
-
-                Button(
-                    onClick = {
-                        navController.navigate("favorite_pokemons_screen")
-                    },
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .height(42.dp)
-                ) {
-                    Text(text = "Favoritos")
-                }
+//                Spacer(modifier = Modifier.width(8.dp)) // Espaçamento entre o botão e a barra de pesquisa
+//
+//                Button(
+//                    onClick = {
+//                        navController.navigate("favorite_pokemons_screen")
+//                    },
+//                    modifier = Modifier
+//                        .padding(8.dp)
+//                        .height(42.dp)
+//                ) {
+//                    Text(text = "Favoritos")
+//                }
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             PokemonList(navController = navController)
         }
@@ -179,50 +202,43 @@ fun PokemonList(
 //    pokemonList: List<PokedexListEntry>
 ) {
 
-    val pokemonList by remember {
-        viewModel.filteredPokemonList
-    }
+// Observar a lista de favoritos usando collectAsState
+    val favoritePokemonList by viewModel.getFavoritePokemonAsPokedexListEntries()
+        .collectAsState(initial = emptyList())
 
-    val endReached by remember {
-        viewModel.endReached
-    }
+//    val endReached by remember {
+//        viewModel.endReached
+//    }
+//
+//    val loadError by remember {
+//        viewModel.loadError
+//    }
+//
+//    val isLoading by remember {
+//        viewModel.isLoading
+//    }
 
-    val loadError by remember {
-        viewModel.loadError
-    }
-
-    val isLoading by remember {
-        viewModel.isLoading
-    }
-
-    LazyColumn(contentPadding = PaddingValues(16.dp)) {
-
-        val itemCount = if (pokemonList.size % 2 == 0) {
-            pokemonList.size / 2
-        } else {
-            pokemonList.size / 2 + 1
+    if (favoritePokemonList.isEmpty()) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Text(text = "Nenhum Pokémon favorito encontrado!")
         }
-
-        items(itemCount) { index ->
-            // Carregue mais Pokémon quando atingir o final da lista e a pesquisa não estiver ativa
-            if (index >= itemCount - 1 && !viewModel.endReached.value && viewModel.filteredPokemonList.value.size == viewModel.pokemonList.size) {
-                // Certifique-se de que apenas carrega mais quando não há filtro aplicado
-                viewModel.loadPokemonPaginated()
+    } else {
+        LazyColumn(contentPadding = PaddingValues(16.dp)) {
+            val itemCount = if (favoritePokemonList.size % 2 == 0) {
+                favoritePokemonList.size / 2
+            } else {
+                favoritePokemonList.size / 2 + 1
             }
-            PokedexRow(rowIndex = index, entries = pokemonList, navController = navController)
-        }
-    }
 
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        if (isLoading) {
-            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-        }
-        if (loadError.isNotEmpty()) {
-            RetrySection(error = loadError) {
-                viewModel.loadPokemonPaginated()
+            items(itemCount) { index ->
+                PokedexRow(
+                    rowIndex = index,
+                    entries = favoritePokemonList,
+                    navController = navController
+                )
             }
         }
     }
@@ -374,22 +390,5 @@ fun PokedexRow(
             }
         }
         Spacer(modifier = Modifier.height(10.dp))
-    }
-}
-
-@Composable
-fun RetrySection(
-    error: String,
-    onRetry: () -> Unit
-) {
-    Column {
-        Text(text = error, color = Color.Red, fontSize = 18.sp)
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = { onRetry() },
-            modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
-        ) {
-            Text(text = "Tentar novamente")
-        }
     }
 }
