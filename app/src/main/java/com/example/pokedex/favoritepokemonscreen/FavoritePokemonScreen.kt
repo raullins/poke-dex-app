@@ -108,7 +108,7 @@ fun FavoritePokemonListScreen(
                         contentDescription = "Voltar",
                         tint = Color.White, // Define a cor branca diretamente
                         modifier = Modifier
-                            .size(42.dp)
+                            .size(52.dp)
                             //.offset(16.dp, 16.dp) // Define o deslocamento do ícone
                             .clickable {
                                 navController.popBackStack() // Ação de clique para voltar

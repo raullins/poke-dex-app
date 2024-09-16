@@ -49,6 +49,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -98,7 +99,9 @@ fun PokemonListScreen(
                 SearchBar(
                     hint = "Procurar...",
                     text = viewModel.searchText.value,
-                    modifier = Modifier.weight(1f).height(42.dp), // Fazer a SearchBar ocupar o máximo de espaço
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(42.dp), // Fazer a SearchBar ocupar o máximo de espaço
                     onSearch = { query ->
                         viewModel.filterPokemonListByNamePrefix(query)
                     }
@@ -114,7 +117,12 @@ fun PokemonListScreen(
                         .padding(8.dp)
                         .height(42.dp)
                 ) {
-                    Text(text = "Favoritos")
+                    Text(
+                        text = "Favoritos",
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(id = R.color.yellow),
+                        fontSize = 18.sp
+                    )
                 }
             }
 
