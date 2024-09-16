@@ -23,11 +23,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,7 +52,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.pokedex.R
-import com.example.pokedex.data.local.FavoritePokemon
 import com.example.pokedex.data.remote.responses.Pokemon
 import com.example.pokedex.data.remote.responses.Type
 import com.example.pokedex.util.Resource
@@ -75,11 +71,10 @@ fun PokemonDetailScreen(
     viewModel: PokemonDetailViewModel = hiltViewModel()
 ) {
 
+    // Estado para carregar as informações do Pokémon
     val pokemonInfo = produceState<Resource<Pokemon>>(initialValue = Resource.Loading<Pokemon>()) {
         value = viewModel.getPokemonInfo(pokemonName)
     }.value
-
-//    val isFavorite = viewModel.isPokemonFavorite(pokemonInfo.data!!.id)
 
     Box(
         modifier = Modifier
@@ -87,7 +82,7 @@ fun PokemonDetailScreen(
             .background(dominantColor)
             .padding(bottom = 16.dp)
     ) {
-
+        // Seção do topo da tela (botão de voltar)
         PokemonDetailTopSection(
             navController = navController,
             modifier = Modifier
@@ -95,31 +90,6 @@ fun PokemonDetailScreen(
                 .fillMaxHeight(0.2f)
                 .align(Alignment.TopCenter)
         )
-
-//        IconButton(onClick = {
-//            if (isFavorite) {
-//                viewModel.removePokemonFromFavorites(
-//                    FavoritePokemon(
-//                        pokemonInfo.data.id,
-//                        pokemonInfo.data.name,
-//                        pokemonInfo.data.sprites
-//                    )
-//                )
-//            } else {
-//                viewModel.addPokemonToFavorites(
-//                    FavoritePokemon(
-//                        pokemonInfo.data.id,
-//                        pokemonInfo.data.name,
-//                        pokemonInfo.data.sprites
-//                    )
-//                )
-//            }
-//        }) {
-//            Icon(
-//                imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-//                contentDescription = null
-//            )
-//        }
 
         PokemonDetailStateWrapper(
             pokemonInfo = pokemonInfo,
@@ -147,6 +117,7 @@ fun PokemonDetailScreen(
                 )
         )
 
+        // Imagem do Pokémon no topo da tela
         Box(
             contentAlignment = Alignment.TopCenter,
             modifier = Modifier
@@ -237,6 +208,7 @@ fun PokemonDetailSection(
 ) {
 
     val scrollState = rememberScrollState()
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -436,7 +408,7 @@ fun PokemonBaseStats(
             color = colorResource(R.color.black)
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
         for (i in pokemonInfo.stats.indices) {
             val stat = pokemonInfo.stats[i]
