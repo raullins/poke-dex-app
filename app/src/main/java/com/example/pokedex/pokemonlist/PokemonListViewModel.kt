@@ -37,14 +37,8 @@ class PokemonListViewModel @Inject constructor(
     var pokemonList = mutableListOf<PokedexListEntry>()
     val filteredPokemonList = mutableStateOf<List<PokedexListEntry>>(listOf())
 
-//    private val _favoritePokemonList = favoritePokemonRepository.getAllFavoritePokemons().stateIn(
-//        scope = viewModelScope,
-//        started = SharingStarted.WhileSubscribed(5000),
-//        initialValue = emptyList()
-//    )
-
-    private val _favoritePokemonList = MutableStateFlow<List<FavoritePokemon>>(emptyList())
-    val favoritePokemonList: StateFlow<List<FavoritePokemon>> =
+    val _favoritePokemonList = MutableStateFlow<List<FavoritePokemon>>(emptyList())
+    private var favoritePokemonList: StateFlow<List<FavoritePokemon>> =
         _favoritePokemonList // Assume que você já tem isso
     val favoritePokemonFilteredList = mutableStateOf<List<FavoritePokemon>>(listOf())
 
@@ -137,7 +131,7 @@ class PokemonListViewModel @Inject constructor(
         }
     }
 
-    private fun loadFavorites() {
+    fun loadFavorites() {
         viewModelScope.launch(Dispatchers.IO) {
             favoritePokemonRepository.getAllFavoritePokemons().collect {
                 _favoritePokemonList.value = it

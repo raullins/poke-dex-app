@@ -135,6 +135,8 @@ fun PokemonDetailScreen(
                 }
             }
         }
+
+
     }
 }
 
@@ -220,7 +222,7 @@ fun PokemonDetailSection(
             text = "#${pokemonInfo.id} ${pokemonInfo.name.capitalize(Locale.ROOT)}",
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            fontSize = 18.sp,
+            fontSize = 22.sp,
             color = colorResource(R.color.black)
         )
 
@@ -231,7 +233,7 @@ fun PokemonDetailSection(
             pokemonHeight = pokemonInfo.height
         )
 
-        PokemonBaseStats(pokemonInfo = pokemonInfo)
+        PokemonBaseStats(pokemonInfo = pokemonInfo, types = pokemonInfo.types)
     }
 }
 
@@ -390,11 +392,17 @@ fun PokemonStat(
 @Composable
 fun PokemonBaseStats(
     pokemonInfo: Pokemon,
-    animationDelayPerItem: Int = 100
+    animationDelayPerItem: Int = 100,
+    types: List<Type>
 ) {
     val maxBaseStat = remember {
         pokemonInfo.stats.maxOf { it.base_stat }
     }
+
+//    val dominantColor = remember {
+//        val color = it.arguments?.getInt("dominantColor")
+//        color?.let { Color(it) } ?: Color.White
+//    }
 
     Column(
         modifier = Modifier
@@ -404,6 +412,7 @@ fun PokemonBaseStats(
 
         Text(
             text = "Stats Básicos: ",
+            fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
             color = colorResource(R.color.black)
         )
@@ -421,6 +430,47 @@ fun PokemonBaseStats(
             )
 
             Spacer(modifier = Modifier.height(8.dp))
+
+        }
+
+        Text(
+            text = "Habilidades:",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .align(Alignment.CenterHorizontally),
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Lista de habilidades
+        pokemonInfo.abilities.forEach { ability ->
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(parseTypeToColor(types[0]))
+                    .padding(7.dp)
+            ) {
+
+                Text(
+                    text = ability.ability.name.replaceFirstChar {
+                        if (it.isLowerCase()) it.titlecase(
+                            Locale.ROOT
+                        ) else it.toString()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .align(Alignment.Center),
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }

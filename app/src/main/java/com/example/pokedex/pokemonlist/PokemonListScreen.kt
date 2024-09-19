@@ -1,5 +1,6 @@
 package com.example.pokedex.pokemonlist
 
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -53,11 +54,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.imageLoader
 import coil.request.ImageRequest
+import com.bumptech.glide.Glide
 import com.example.pokedex.R
 import com.example.pokedex.data.local.FavoritePokemon
 import com.example.pokedex.data.models.PokedexListEntry
@@ -292,12 +295,19 @@ fun PokedexEntry(
             }
     ) {
         Column {
-            AsyncImage(
-                model = entry.imageUrl,
-                contentDescription = entry.pokemonName,
-                modifier = modifier
+//            AsyncImage(
+//                model = entry.imageUrl,
+//                contentDescription = entry.pokemonName,
+//                modifier = modifier
+//                    .size(120.dp)
+//                    .align(alignment = Alignment.CenterHorizontally),
+//            )
+
+            GlideImage(
+                imageUrl = entry.imageUrl,
+                modifier = Modifier
+                    .align(alignment = Alignment.CenterHorizontally)
                     .size(120.dp)
-                    .align(alignment = Alignment.CenterHorizontally),
             )
 
             Text(
@@ -383,6 +393,31 @@ fun PokedexRow(
         }
         Spacer(modifier = Modifier.height(10.dp))
     }
+}
+
+@Composable
+fun GlideImage(
+    imageUrl: String,
+    modifier: Modifier = Modifier
+) {
+    // Usando AndroidView para integrar Glide com Compose
+    AndroidView(
+        factory = { context ->
+            ImageView(context).apply {
+                scaleType = ImageView.ScaleType.CENTER_CROP
+            }
+        },
+        update = { imageView ->
+            // Usar Glide para carregar a imagem
+            Glide.with(imageView.context)
+                .load(imageUrl)
+                .placeholder(R.drawable.placeholder_image) // Placeholder enquanto carrega
+                .error(R.drawable.error_image) // Imagem de erro caso falhe o carregamento
+                .into(imageView)
+        },
+        modifier = modifier
+            .size(120.dp) // Pode ajustar o tamanho conforme necessário
+    )
 }
 
 @Composable

@@ -1,5 +1,6 @@
 package com.example.pokedex.favoritepokemonscreen
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -119,7 +120,9 @@ fun FavoritePokemonListScreen(
                 SearchBar(
                     hint = "Procurar...",
                     text = viewModel.searchText.value,
-                    modifier = Modifier.weight(1f).height(42.dp), // Fazer a SearchBar ocupar o máximo de espaço
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(42.dp), // Fazer a SearchBar ocupar o máximo de espaço
                     onSearch = { query ->
                         viewModel.filterFavoritePokemonList(query)
                     }
@@ -154,7 +157,7 @@ fun SearchBar(
     text: String
 ) {
 
-    val isHintDisplayed = text.isEmpty()
+    var isHintDisplayed by remember { mutableStateOf(text.isEmpty()) }
 
     Box(modifier = modifier) {
 
@@ -163,6 +166,7 @@ fun SearchBar(
 
             onValueChange = {
                 onSearch(it)
+                isHintDisplayed = it.isEmpty()
             },
 
             maxLines = 1,
@@ -193,6 +197,7 @@ fun SearchBar(
     }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun PokemonList(
     navController: NavController,
@@ -217,14 +222,17 @@ fun PokemonList(
 //    }
 
     if (favoritePokemonList.isEmpty()) {
+
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
         ) {
             Text(text = "Nenhum Pokémon favorito encontrado!")
         }
+
     } else {
         LazyColumn(contentPadding = PaddingValues(16.dp)) {
+
             val itemCount = if (favoritePokemonList.size % 2 == 0) {
                 favoritePokemonList.size / 2
             } else {
@@ -232,11 +240,12 @@ fun PokemonList(
             }
 
             items(itemCount) { index ->
-                PokedexRow(
-                    rowIndex = index,
-                    entries = favoritePokemonList,
-                    navController = navController
-                )
+                // Carregue mais Pokémon quando atingir o final da lista e a pesquisa não estiver ativa
+                if (index >= itemCount - 1 && !viewModel.endReached.value && viewModel.favoritePokemonFilteredList.value.size == viewModel._favoritePokemonList.value.size) {
+                    // Certifique-se de que apenas carrega mais quando não há filtro aplicado
+                    viewModel.loadFavorites()
+                }
+                PokedexRow(rowIndex = index, entries = favoritePokemonList, navController = navController)
             }
         }
     }
@@ -275,7 +284,6 @@ fun PokedexEntry(
 
     // Observe o estado reativo do favorito
     var isFavorite by remember { mutableStateOf(viewModel.isPokemonFavorite(entry.number)) }
-
 
     Box(
         contentAlignment = Alignment.Center,
