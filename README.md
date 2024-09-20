@@ -131,4 +131,5 @@ git push origin minha-feature;
 * [Exemplos de uso](#exemplos-de-uso)
 
   ![Listagem](https://github.com/user-attachments/assets/d81a9375-ebaa-4c1b-ac2c-7b551ed25ba0)
+  <br>
 Listagem
