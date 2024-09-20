@@ -133,3 +133,15 @@ git push origin minha-feature;
   ![Listagem](https://github.com/user-attachments/assets/d81a9375-ebaa-4c1b-ac2c-7b551ed25ba0)
   <br>
 Listagem
+
+![Ver detalhes](https://github.com/user-attachments/assets/2558b8cd-985d-4584-92af-82565d4786b9)
+  <br>
+Ver detalhes
+
+![Favoritos](https://github.com/user-attachments/assets/83ca3735-9818-461a-aa68-475d0f32f4e0)
+<br>
+Favoritar e lista de favoritos
+
+![Procurar pokemon](https://github.com/user-attachments/assets/fd94cc8a-7e87-4bf2-bf68-ef8bcc5ad478)
+<br>
+Procurar pokemon
