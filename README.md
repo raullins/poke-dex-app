@@ -11,7 +11,7 @@ Aplicativo Android desenvolvido em Kotlin que utiliza a arquitetura `MVVM`, alé
 
 **Lista de Pokémon**: Exibe uma lista paginada de Pokémon, obtendo dados da PokeApi;
 ![Listagem](https://github.com/user-attachments/assets/d81a9375-ebaa-4c1b-ac2c-7b551ed25ba0)
- <br>
+
 **Pesquisa de Pokémon**: Permite a busca de Pokémon pelo nome;
 
 __Favoritar Pokémon__: Permite adicionar Pokémon aos favoritos e visualizá-los offline;
