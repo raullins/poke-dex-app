@@ -221,9 +221,10 @@ fun PokemonDetailSection(
         Text(
             text = "#${pokemonInfo.id} ${pokemonInfo.name.capitalize(Locale.ROOT)}",
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
+//            textAlign = TextAlign.Center,
             fontSize = 22.sp,
-            color = colorResource(R.color.black)
+//            color = colorResource(R.color.black),
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
         PokemonTypeSection(types = pokemonInfo.types)
@@ -232,6 +233,8 @@ fun PokemonDetailSection(
             pokemonWeight = pokemonInfo.weight,
             pokemonHeight = pokemonInfo.height
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         PokemonBaseStats(pokemonInfo = pokemonInfo, types = pokemonInfo.types)
     }
@@ -414,7 +417,8 @@ fun PokemonBaseStats(
             text = "Stats Básicos: ",
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
-            color = colorResource(R.color.black)
+//            color = colorResource(R.color.black),
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
         Spacer(modifier = Modifier.height(14.dp))

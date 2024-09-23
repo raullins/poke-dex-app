@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,10 +28,13 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -78,62 +82,85 @@ fun PokemonListScreen(
 //    // Observe a lista de favoritos como um estado
 //    val favoritePokemonList by viewModel.favoritePokemonList.collectAsState()
 
-    Surface(
-        color = MaterialTheme.colorScheme.background,
-        modifier = Modifier.fillMaxSize()
-    ) {
+//    var isDarkTheme by remember { mutableStateOf(false) }
 
-        Column {
-            Spacer(modifier = Modifier.height(20.dp))
-            Image(
-                painter = painterResource(id = R.drawable.ic_international_pokemon_logo),
-                contentDescription = "Pokemon logo",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally)
-            )
+//    PokeDexTheme(darkTheme = isDarkTheme) {
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                SearchBar(
-                    hint = "Procurar...",
-                    text = viewModel.searchText.value,
+        Surface(
+            color = MaterialTheme.colorScheme.background,
+            modifier = Modifier.fillMaxSize()
+        ) {
+
+            Column {
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Image(
+                    painter = painterResource(id = R.drawable.ic_international_pokemon_logo),
+                    contentDescription = "Pokemon logo",
                     modifier = Modifier
-                        .weight(1f)
-                        .height(42.dp), // Fazer a SearchBar ocupar o máximo de espaço
-                    onSearch = { query ->
-                        viewModel.filterPokemonListByNamePrefix(query)
-                    }
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
                 )
 
-                Spacer(modifier = Modifier.width(8.dp)) // Espaçamento entre o botão e a barra de pesquisa
+//                Spacer(modifier = Modifier.width(8.dp))
 
-                Button(
-                    onClick = {
-                        navController.navigate("favorite_pokemons_screen")
-                    },
+//                IconButton(
+//                    onClick = { isDarkTheme = !isDarkTheme },
+//                    modifier = Modifier
+//                        .size(50.dp)
+//                        .align(Alignment.End)
+//                        ,
+//                ) {
+//                    Icon(
+//                        painter = painterResource(id = R.drawable.dark_mode),
+//                        contentDescription = "Mudar tema",
+//                        tint = colorResource(id = R.color.yellow)
+//                    )
+//                }
+
+                Row(
                     modifier = Modifier
-                        .padding(8.dp)
-                        .height(42.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Favoritos",
-                        fontWeight = FontWeight.Bold,
-                        color = colorResource(id = R.color.yellow),
-                        fontSize = 18.sp
+                    SearchBar(
+                        hint = "Procurar...",
+                        text = viewModel.searchText.value,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(42.dp), // Fazer a SearchBar ocupar o máximo de espaço
+                        onSearch = { query ->
+                            viewModel.filterPokemonListByNamePrefix(query)
+                        }
                     )
+
+                    Spacer(modifier = Modifier.width(8.dp)) // Espaçamento entre o botão e a barra de pesquisa
+
+                    Button(
+                        onClick = {
+                            navController.navigate("favorite_pokemons_screen")
+                        },
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .height(42.dp)
+                    ) {
+                        Text(
+                            text = "Favoritos",
+                            fontWeight = FontWeight.Bold,
+                            color = colorResource(id = R.color.yellow),
+                            fontSize = 18.sp
+                        )
+                    }
                 }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                PokemonList(navController = navController)
             }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            PokemonList(navController = navController)
         }
-    }
+//    }
 }
 
 @Composable
@@ -436,3 +463,29 @@ fun RetrySection(
         }
     }
 }
+
+//@Composable
+//fun PokeDexTheme(
+//    darkTheme: Boolean = isSystemInDarkTheme(),
+//    content: @Composable () -> Unit
+//) {
+//    val colors = if (darkTheme) {
+//        darkColorScheme(
+//            primary = Color(0xFFBB86FC),
+//            primaryContainer = Color(0xFF3700B3),
+//            secondary = Color(0xFF03DAC6)
+//        )
+//    } else {
+//        lightColorScheme(
+//            primary = Color(0xFF6200EE),
+//            primaryContainer = Color(0xFF3700B3),
+//            secondary = Color(0xFF03DAC6)
+//        )
+//    }
+//
+//    MaterialTheme(
+//        colorScheme = colors,
+////        typography = Typography,
+//        content = content
+//    )
+//}

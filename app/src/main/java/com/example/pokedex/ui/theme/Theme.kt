@@ -14,10 +14,11 @@ import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorPalette = darkColorScheme(
     primary = Color.Yellow,
+    secondary = Color.Blue,
     background = Color(0xFF101010),
     onBackground = Color.White,
     surface = Color(0xFF303030),
-    onSurface = Color.White
+    onSurface = Color.White,
 )
 
 private val LightColorPalette = lightColorScheme(
