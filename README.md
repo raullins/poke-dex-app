@@ -19,6 +19,8 @@ __Visualização de Detalhes__: Exibe detalhes sobre cada Pokémon, incluindo im
 
 __Offline__: Salva os Pokémon favoritos localmente para acesso offline;
 
+__Mudança de tema__: Tema da aplicação que acompanha o modo dark/light do sistema;
+
  <br>
  
 * [Tecnologias utilizadas](#tecnologias-utilizadas)
