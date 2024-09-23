@@ -325,7 +325,7 @@ fun PokemonDetailDataItem(
             tint = colorResource(R.color.black)
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "$dataValue$dataUnit", color = colorResource(R.color.black))
+        Text(text = "$dataValue$dataUnit", color = colorResource(R.color.gray))
     }
 }
 
