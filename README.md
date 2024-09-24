@@ -106,7 +106,9 @@ const val BASE_URL = "https://pokeapi.co/api/v2/"
 
 **Favoritar Pokémon**: Clique no ícone de coração na tela de detalhes para favoritar um Pokémon;
 
-**Visualizar Favoritos**: Acesse a tela de favoritos para visualizar seus Pokémon salvos offline.
+**Visualizar Favoritos**: Acesse a tela de favoritos para visualizar seus Pokémon salvos offline;
+
+**Mudar Tema**: A aplicação acompanha o tema principal do dispositivo. Basta alterar o tema do aparelho para tambem mudar o tema da aplicação.
 
 <br>
 
