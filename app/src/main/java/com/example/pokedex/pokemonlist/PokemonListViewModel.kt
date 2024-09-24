@@ -62,7 +62,9 @@ class PokemonListViewModel @Inject constructor(
 
             when (result) {
                 is Resource.Success -> {
+
                     endReached.value = currentPage * PAGE_SIZE >= result.data!!.count
+
                     val pokedexEntries = result.data.results.mapIndexed { index, entry ->
                         val number = if (entry.url.endsWith("/")) {
                             entry.url.dropLast(1).takeLastWhile { it.isDigit() }
@@ -94,6 +96,7 @@ class PokemonListViewModel @Inject constructor(
         }
     }
 
+    // Função para calcular a cor dominante de uma imagem
     fun calculateDominantColor(drawable: Drawable, onFinish: (Color) -> Unit) {
 
         val bitMap = (drawable as BitmapDrawable).bitmap.copy(Bitmap.Config.ARGB_8888, true)
@@ -105,6 +108,7 @@ class PokemonListViewModel @Inject constructor(
         }
     }
 
+    // Função para filtrar a lista de pokemon a partir da string na searchbar
     fun filterPokemonListByNamePrefix(prefix: String) {
 
         searchText.value = prefix
@@ -118,6 +122,7 @@ class PokemonListViewModel @Inject constructor(
         }
     }
 
+    // Tentei fazer o memso aqui, mas não deu certo. Vou Continuar testando e tentando resolver
     fun filterFavoritePokemonList(prefix: String) {
 
         searchText.value = prefix
@@ -131,6 +136,7 @@ class PokemonListViewModel @Inject constructor(
         }
     }
 
+    // Para carregar os favoritos. Tava dando erro quando era na thread principal, ai usei a 'IO'
     fun loadFavorites() {
         viewModelScope.launch(Dispatchers.IO) {
             favoritePokemonRepository.getAllFavoritePokemons().collect {
@@ -139,6 +145,7 @@ class PokemonListViewModel @Inject constructor(
         }
     }
 
+    // Pra transformar a lista de favoritos numa lista de entradas
     fun getFavoritePokemonAsPokedexListEntries(): StateFlow<List<PokedexListEntry>> {
         return favoritePokemonList.map { favoriteList ->
             favoriteList.map { favorite ->
@@ -155,9 +162,11 @@ class PokemonListViewModel @Inject constructor(
         )
     }
 
+    // Verifica se o pokemon esta na lista de favoritos
     fun isPokemonFavorite(pokemonId: Int): Boolean {
         return _favoritePokemonList.value.any { it.number == pokemonId }
     }
+
 
     fun addPokemonToFavorites(pokemon: FavoritePokemon) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -170,6 +179,7 @@ class PokemonListViewModel @Inject constructor(
             //loadFavorites()
         }
     }
+
 
     fun removePokemonFromFavorites(pokemon: FavoritePokemon) {
         viewModelScope.launch(Dispatchers.IO) {
