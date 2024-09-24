@@ -157,3 +157,10 @@ Favoritar e lista de favoritos
 
 
 Procurar pokemon
+
+<br>
+
+![Light y Dark mode](https://github.com/user-attachments/assets/5d58aab6-9932-47b1-bb6f-4043a5419220)
+
+
+Light/dark mode
