@@ -26,13 +26,11 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    @Singleton
     @Provides
     fun providePokemonRepository(
         api: PokeApi
     ) = PokemonRepository(api)
 
-    @Singleton
     @Provides
     fun providePokeApi(): PokeApi {
         return Retrofit.Builder()
@@ -43,7 +41,6 @@ object AppModule {
     }
 
     @Provides
-    @Singleton
     fun provideAppDataBase(
         application: Application
     ): AppDataBase {
@@ -57,13 +54,11 @@ object AppModule {
     }
 
     @Provides
-    @Singleton
     fun provideFavoritePokemonDao(database: AppDataBase): FavoritePokemonDAO {
         return database.favoritePokemonDao()
     }
 
     @Provides
-    @Singleton
     fun provideFavoritePokemonRepository(
         favoritePokemonDao: FavoritePokemonDAO
     ): FavoritePokemonRepository {
