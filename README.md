@@ -83,15 +83,14 @@ const val BASE_URL = "https://pokeapi.co/api/v2/"
 
 `ui/`: Componentes de UI usando Jetpack Compose;
 
-`list/`: Exibe a lista de Pokémon e a pesquisa;
+`pokemonlist/`: Tela que exibe a lista de Pokémon e a pesquisa, além de sua viewmodel;
 
-`detail/`: Exibe os detalhes de um Pokémon;
+`pokemondetailscreen/`: Tela que exibe os detalhes de um Pokémon, além de sua viewmodel;
 
-`favorites/`: Tela de visualização de favoritos;
+`favoritepokemonscreen/`: Tela de visualização de favoritos, além de sua viewmodel;
 
-`di/`: Configurações de injeção de dependências usando Hilt;
+`di/`: Configurações de injeção de dependências usando Hilt.
 
-`viewmodel/`: Contém as ViewModels para gerenciar o estado e a lógica de negócios.
 
 <br>
 
@@ -249,15 +248,14 @@ const val BASE_URL = "https://pokeapi.co/api/v2/"
 
 `ui/`: UI components using Jetpack Compose;
 
-`list/`: Displays the Pokémon list and search functionality;
+`listscreen/`: Displays the Pokémon list and search functionality;
 
-`detail/`: Displays Pokémon details;
+`detailscreen/`: Displays Pokémon details;
 
-`favorites/`: Favorites view screen;
+`favoritescreen/`: Favorites view screen;
 
-`di/`: Dependency injection setup using Hilt;
+`di/`: Dependency injection setup using Hilt.
 
-`viewmodel/`: Contains ViewModels for managing state and business logic.
 
 <br>
 
