@@ -7,7 +7,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.pokedex.data.local.AppDataBase
-import com.example.pokedex.data.local.Converters
 import com.example.pokedex.data.local.FavoritePokemonDAO
 import com.example.pokedex.data.remote.PokeApi
 import com.example.pokedex.repository.FavoritePokemonRepository

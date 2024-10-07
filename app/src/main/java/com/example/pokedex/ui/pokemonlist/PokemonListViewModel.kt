@@ -1,4 +1,4 @@
-package com.example.pokedex.pokemonlist
+package com.example.pokedex.ui.pokemonlist
 
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -38,8 +38,10 @@ class PokemonListViewModel @Inject constructor(
     val filteredPokemonList = mutableStateOf<List<PokedexListEntry>>(listOf())
 
     val _favoritePokemonList = MutableStateFlow<List<FavoritePokemon>>(emptyList())
+
     private var favoritePokemonList: StateFlow<List<FavoritePokemon>> =
         _favoritePokemonList // Assume que você já tem isso
+
     val favoritePokemonFilteredList = mutableStateOf<List<FavoritePokemon>>(listOf())
 
     var loadError = mutableStateOf("")
@@ -71,9 +73,23 @@ class PokemonListViewModel @Inject constructor(
                         } else {
                             entry.url.takeLastWhile { it.isDigit() }
                         }
+
+                        val pokemonResult = repository.getPokemon(entry.name)
+
                         val url =
                             "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${number}.png"
-                        PokedexListEntry(entry.name.capitalize(Locale.ROOT), url, number.toInt())
+                        PokedexListEntry(
+                            entry.name.capitalize(Locale.ROOT),
+                            url,
+                            pokemonResult.data!!.sprites.front_default,
+                            number.toInt(),
+                            pokemonResult.data.types.map { it.type.name },
+                            pokemonResult.data.weight,
+                            pokemonResult.data.height,
+                            pokemonResult.data.stats.map { it.stat.name },
+                            pokemonResult.data.stats.map { it.base_stat },
+                            pokemonResult.data.abilities.map { it.ability.name }
+                        )
                     }
 
                     currentPage++
@@ -152,7 +168,14 @@ class PokemonListViewModel @Inject constructor(
                 PokedexListEntry(
                     pokemonName = favorite.pokemonName,
                     imageUrl = favorite.imageUrl,
-                    number = favorite.number
+                    types = favorite.types,
+                    number = favorite.number,
+                    weight = favorite.weight,
+                    height = favorite.height,
+                    statsNames = favorite.statsNames,
+                    statsValues = favorite.statsValues,
+                    abilities = favorite.abilities,
+                    spriteFrontDefault = favorite.spriteFrontDefault
                 )
             }
         }.stateIn(

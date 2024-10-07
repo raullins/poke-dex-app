@@ -1,4 +1,4 @@
-package com.example.pokedex.pokemondetailscreen
+package com.example.pokedex.ui.pokemondetailscreen
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -44,7 +44,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,6 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.pokedex.R
+import com.example.pokedex.data.local.FavoritePokemon
 import com.example.pokedex.data.remote.responses.Pokemon
 import com.example.pokedex.data.remote.responses.Type
 import com.example.pokedex.util.Resource
@@ -72,9 +72,14 @@ fun PokemonDetailScreen(
 ) {
 
     // Estado para carregar as informações do Pokémon
-    val pokemonInfo = produceState<Resource<Pokemon>>(initialValue = Resource.Loading<Pokemon>()) {
-        value = viewModel.getPokemonInfo(pokemonName)
-    }.value
+    var pokemonInfo =
+        produceState<Resource<Pokemon>>(initialValue = Resource.Loading<Pokemon>()) {
+            value = viewModel.getPokemonInfo(pokemonName)
+        }.value
+
+    if (pokemonInfo.data == null) {
+        pokemonInfo = viewModel.getFavoritePokemonByName(pokemonName)
+    }
 
     Box(
         modifier = Modifier
@@ -124,15 +129,13 @@ fun PokemonDetailScreen(
                 .fillMaxSize()
         ) {
             if (pokemonInfo is Resource.Success) {
-                pokemonInfo.data?.sprites?.let { sprites ->
-                    AsyncImage(
-                        model = sprites.front_default,
-                        contentDescription = pokemonInfo.data.name,
-                        modifier = Modifier
-                            .size(pokemonImageSize)
-                            .offset(y = topPadding)
-                    )
-                }
+                AsyncImage(
+                    model = pokemonInfo.data!!.spriteFrontDefault,
+                    contentDescription = pokemonInfo.data!!.pokemonName,
+                    modifier = Modifier
+                        .size(pokemonImageSize)
+                        .offset(y = topPadding)
+                )
             }
         }
 
@@ -174,7 +177,7 @@ fun PokemonDetailTopSection(
 
 @Composable
 fun PokemonDetailStateWrapper(
-    pokemonInfo: Resource<Pokemon>,
+    pokemonInfo: Resource<FavoritePokemon>,
     modifier: Modifier = Modifier,
     loadingModifier: Modifier = Modifier
 ) {
@@ -200,12 +203,14 @@ fun PokemonDetailStateWrapper(
                 modifier = modifier.offset(y = (-20).dp)
             )
         }
+
+        else -> {}
     }
 }
 
 @Composable
 fun PokemonDetailSection(
-    pokemonInfo: Pokemon,
+    pokemonInfo: FavoritePokemon,
     modifier: Modifier = Modifier
 ) {
 
@@ -219,7 +224,7 @@ fun PokemonDetailSection(
             .verticalScroll(scrollState)
     ) {
         Text(
-            text = "#${pokemonInfo.id} ${pokemonInfo.name.capitalize(Locale.ROOT)}",
+            text = "#${pokemonInfo.number} ${pokemonInfo.pokemonName.capitalize(Locale.ROOT)}",
             fontWeight = FontWeight.Bold,
 //            textAlign = TextAlign.Center,
             fontSize = 22.sp,
@@ -241,7 +246,7 @@ fun PokemonDetailSection(
 }
 
 @Composable
-fun PokemonTypeSection(types: List<Type>) {
+fun PokemonTypeSection(types: List<String>) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -258,7 +263,7 @@ fun PokemonTypeSection(types: List<Type>) {
                     .height(35.dp)
             ) {
                 Text(
-                    text = type.type.name.capitalize(Locale.ROOT),
+                    text = type.capitalize(Locale.ROOT),
                     color = Color.White,
                     fontSize = 18.sp
                 )
@@ -394,12 +399,12 @@ fun PokemonStat(
 
 @Composable
 fun PokemonBaseStats(
-    pokemonInfo: Pokemon,
+    pokemonInfo: FavoritePokemon,
     animationDelayPerItem: Int = 100,
-    types: List<Type>
+    types: List<String>
 ) {
     val maxBaseStat = remember {
-        pokemonInfo.stats.maxOf { it.base_stat }
+        pokemonInfo.statsValues.max()
     }
 
 //    val dominantColor = remember {
@@ -423,13 +428,13 @@ fun PokemonBaseStats(
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        for (i in pokemonInfo.stats.indices) {
-            val stat = pokemonInfo.stats[i]
+        for (i in pokemonInfo.statsValues.indices) {
+//            val stat = pokemonInfo.statsValues[i]
             PokemonStat(
-                statName = parseStatToAbbr(stat),
-                statValue = stat.base_stat,
+                statName = parseStatToAbbr(pokemonInfo.statsNames[i]),
+                statValue = pokemonInfo.statsValues[i],
                 statMaxValue = maxBaseStat,
-                statColor = parseStatToColor(stat),
+                statColor = parseStatToColor(pokemonInfo.statsNames[i]),
                 animationDelay = i * animationDelayPerItem
             )
 
@@ -450,7 +455,7 @@ fun PokemonBaseStats(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Lista de habilidades
-        pokemonInfo.abilities.forEach { ability ->
+        pokemonInfo.abilities.forEach { String ->
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
@@ -459,7 +464,7 @@ fun PokemonBaseStats(
             ) {
 
                 Text(
-                    text = ability.ability.name.replaceFirstChar {
+                    text = String.replaceFirstChar {
                         if (it.isLowerCase()) it.titlecase(
                             Locale.ROOT
                         ) else it.toString()
@@ -471,7 +476,6 @@ fun PokemonBaseStats(
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
-
             }
 
             Spacer(modifier = Modifier.height(4.dp))

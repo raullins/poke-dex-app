@@ -1,11 +1,10 @@
-package com.example.pokedex.pokemonlist
+package com.example.pokedex.ui.pokemonlist
 
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,16 +27,12 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,7 +56,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.bumptech.glide.Glide
@@ -86,22 +80,22 @@ fun PokemonListScreen(
 
 //    PokeDexTheme(darkTheme = isDarkTheme) {
 
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            modifier = Modifier.fillMaxSize()
-        ) {
+    Surface(
+        color = MaterialTheme.colorScheme.background,
+        modifier = Modifier.fillMaxSize()
+    ) {
 
-            Column {
+        Column {
 
-                Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-                Image(
-                    painter = painterResource(id = R.drawable.ic_international_pokemon_logo),
-                    contentDescription = "Pokemon logo",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                )
+            Image(
+                painter = painterResource(id = R.drawable.ic_international_pokemon_logo),
+                contentDescription = "Pokemon logo",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally)
+            )
 
 //                Spacer(modifier = Modifier.width(8.dp))
 
@@ -119,47 +113,47 @@ fun PokemonListScreen(
 //                    )
 //                }
 
-                Row(
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SearchBar(
+                    hint = "Procurar...",
+                    text = viewModel.searchText.value,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    SearchBar(
-                        hint = "Procurar...",
-                        text = viewModel.searchText.value,
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(42.dp), // Fazer a SearchBar ocupar o máximo de espaço
-                        onSearch = { query ->
-                            viewModel.filterPokemonListByNamePrefix(query)
-                        }
-                    )
-
-                    Spacer(modifier = Modifier.width(8.dp)) // Espaçamento entre o botão e a barra de pesquisa
-
-                    Button(
-                        onClick = {
-                            navController.navigate("favorite_pokemons_screen")
-                        },
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .height(42.dp)
-                    ) {
-                        Text(
-                            text = "Favoritos",
-                            fontWeight = FontWeight.Bold,
-                            color = colorResource(id = R.color.yellow),
-                            fontSize = 18.sp
-                        )
+                        .weight(1f)
+                        .height(42.dp), // Fazer a SearchBar ocupar o máximo de espaço
+                    onSearch = { query ->
+                        viewModel.filterPokemonListByNamePrefix(query)
                     }
+                )
+
+                Spacer(modifier = Modifier.width(8.dp)) // Espaçamento entre o botão e a barra de pesquisa
+
+                Button(
+                    onClick = {
+                        navController.navigate("favorite_pokemons_screen")
+                    },
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .height(42.dp)
+                ) {
+                    Text(
+                        text = "Favoritos",
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(id = R.color.yellow),
+                        fontSize = 18.sp
+                    )
                 }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                PokemonList(navController = navController)
             }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            PokemonList(navController = navController)
         }
+    }
 //    }
 }
 
@@ -347,16 +341,26 @@ fun PokedexEntry(
                     .padding(bottom = 1.dp)
             )
 
+            val favoritePokemon = FavoritePokemon(
+                entry.number,
+                entry.pokemonName,
+                entry.imageUrl,
+                entry.spriteFrontDefault,
+                entry.types,
+                entry.weight,
+                entry.height,
+                entry.statsNames,
+                entry.statsValues,
+                entry.abilities
+            )
+
             IconToggleButton(
+
                 checked = isFavorite,
                 onCheckedChange = {
                     if (isFavorite) {
                         viewModel.removePokemonFromFavorites(
-                            FavoritePokemon(
-                                entry.number,
-                                entry.pokemonName,
-                                entry.imageUrl
-                            )
+                            favoritePokemon
                         )
                         isFavorite = !isFavorite
                         Toast.makeText(
@@ -366,11 +370,7 @@ fun PokedexEntry(
                         ).show()
                     } else {
                         viewModel.addPokemonToFavorites(
-                            FavoritePokemon(
-                                entry.number,
-                                entry.pokemonName,
-                                entry.imageUrl
-                            )
+                            favoritePokemon
                         )
                         isFavorite = !isFavorite
                         Toast.makeText(

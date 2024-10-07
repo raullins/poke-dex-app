@@ -1,5 +1,6 @@
 package com.example.pokedex.data.remote
 
+import com.example.pokedex.data.local.FavoritePokemon
 import com.example.pokedex.data.remote.responses.Pokemon
 import com.example.pokedex.data.remote.responses.PokemonList
 import retrofit2.http.GET

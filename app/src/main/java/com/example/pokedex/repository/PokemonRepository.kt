@@ -1,5 +1,6 @@
 package com.example.pokedex.repository
 
+import com.example.pokedex.data.local.FavoritePokemon
 import com.example.pokedex.data.remote.PokeApi
 import com.example.pokedex.data.remote.responses.Pokemon
 import com.example.pokedex.data.remote.responses.PokemonList

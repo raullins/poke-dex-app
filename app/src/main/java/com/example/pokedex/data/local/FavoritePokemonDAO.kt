@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.example.pokedex.util.Resource
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -18,4 +19,7 @@ interface FavoritePokemonDAO {
 
     @Query("SELECT * FROM favorite_pokemon")
     fun getAllFavoritePokemon(): Flow<List<FavoritePokemon>>
+
+    @Query("SELECT * FROM favorite_pokemon WHERE pokemonName = :name")
+    fun getFavoriteByName(name: String): FavoritePokemon
 }

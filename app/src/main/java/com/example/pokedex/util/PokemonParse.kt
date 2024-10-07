@@ -6,8 +6,8 @@ import com.example.pokedex.data.remote.responses.Type
 import com.example.pokedex.ui.theme.*
 import java.util.*
 
-fun parseTypeToColor(type: Type): Color {
-    return when (type.type.name.toLowerCase(Locale.ROOT)) {
+fun parseTypeToColor(type: String): Color {
+    return when (type.toLowerCase(Locale.ROOT)) {
         "normal" -> TypeNormal
         "fire" -> TypeFire
         "water" -> TypeWater
@@ -30,8 +30,8 @@ fun parseTypeToColor(type: Type): Color {
     }
 }
 
-fun parseStatToColor(stat: Stat): Color {
-    return when (stat.stat.name.toLowerCase()) {
+fun parseStatToColor(stat: String): Color {
+    return when (stat.toLowerCase()) {
         "hp" -> HPColor
         "attack" -> AtkColor
         "defense" -> DefColor
@@ -42,8 +42,8 @@ fun parseStatToColor(stat: Stat): Color {
     }
 }
 
-fun parseStatToAbbr(stat: Stat): String {
-    return when (stat.stat.name.toLowerCase()) {
+fun parseStatToAbbr(stat: String): String {
+    return when (stat.toLowerCase()) {
         "hp" -> "HP"
         "attack" -> "Atk"
         "defense" -> "Def"
