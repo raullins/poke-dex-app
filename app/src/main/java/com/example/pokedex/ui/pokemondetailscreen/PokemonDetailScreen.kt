@@ -1,4 +1,4 @@
-package com.example.pokedex.pokemondetailscreen
+package com.example.pokedex.ui.pokemondetailscreen
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -44,7 +44,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -72,8 +71,30 @@ fun PokemonDetailScreen(
 ) {
 
     // Estado para carregar as informações do Pokémon
+//        var pokemonInfo = produceState<Resource<Pokemon>>(initialValue = Resource.Loading<Pokemon>()) {
+//            value = viewModel.getPokemonInfo(pokemonName)
+//        }.value
+//
+//        if (pokemonInfo.data == null){
+//            pokemonInfo.data = viewModel.getFavoritePokemonByName(pokemonName)
+//        }
+
+    // Estado para carregar as informações do Pokémon
     val pokemonInfo = produceState<Resource<Pokemon>>(initialValue = Resource.Loading<Pokemon>()) {
-        value = viewModel.getPokemonInfo(pokemonName)
+        // Tente buscar os dados online
+        val result = viewModel.getPokemonInfo(pokemonName)
+
+        // Se falhar, busque os dados offline
+        if (result.message == "Um erro inesperado ocorreu") {
+            val offlineData = viewModel.getFavoritePokemonByName(pokemonName)
+            if (offlineData != null) {
+                value = Resource.Success(offlineData)
+            } else {
+                value = Resource.Error("Não foi possível obter os dados do Pokémon.")
+            }
+        } else {
+            value = result
+        }
     }.value
 
     Box(
@@ -127,7 +148,7 @@ fun PokemonDetailScreen(
                 pokemonInfo.data?.sprites?.let { sprites ->
                     AsyncImage(
                         model = sprites.front_default,
-                        contentDescription = pokemonInfo.data.name,
+                        contentDescription = pokemonInfo.data!!.name,
                         modifier = Modifier
                             .size(pokemonImageSize)
                             .offset(y = topPadding)

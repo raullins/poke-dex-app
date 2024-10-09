@@ -1,6 +1,11 @@
 package com.example.pokedex.data.remote.responses
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "favorite_pokemon")
 data class Pokemon(
+    @PrimaryKey val id: Int,
     val abilities: List<Ability>,
     val base_experience: Int,
     val cries: Cries,
@@ -8,7 +13,6 @@ data class Pokemon(
     val game_indices: List<GameIndice>,
     val height: Int,
     val held_items: List<Any>,
-    val id: Int,
     val is_default: Boolean,
     val location_area_encounters: String,
     val moves: List<Move>,

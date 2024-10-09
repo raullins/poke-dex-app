@@ -29,4 +29,9 @@ class PokemonRepository @Inject constructor(
         }
         return Resource.Success(response)
     }
+
+    suspend fun getPokemonWithouResource(name: String): Pokemon {
+        val response = api.getPokemon(name.lowercase())
+        return response
+    }
 }

@@ -11,9 +11,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.pokedex.favoritepokemonscreen.FavoritePokemonListScreen
-import com.example.pokedex.pokemondetailscreen.PokemonDetailScreen
-import com.example.pokedex.pokemonlist.PokemonListScreen
+import com.example.pokedex.ui.favoritepokemonscreen.FavoritePokemonListScreen
+import com.example.pokedex.ui.pokemondetailscreen.PokemonDetailScreen
+import com.example.pokedex.ui.pokemonlist.PokemonListScreen
 import com.example.pokedex.ui.theme.PokeDexTheme
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale

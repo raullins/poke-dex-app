@@ -1,26 +1,20 @@
 package com.example.pokedex.di
 
 import android.app.Application
-import android.content.Context
-import android.util.Log
 import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.pokedex.data.local.AppDataBase
 import com.example.pokedex.data.local.Converters
 import com.example.pokedex.data.local.FavoritePokemonDAO
 import com.example.pokedex.data.remote.PokeApi
-import com.example.pokedex.repository.FavoritePokemonRepository
+import com.example.pokedex.data.local.FavoritePokemonRepository
 import com.example.pokedex.repository.PokemonRepository
 import com.example.pokedex.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -49,6 +43,7 @@ object AppModule {
             klass = AppDataBase::class.java,
             name = "pokedex_database"
         )
+//            .addTypeConverter(Converters::class)
             .fallbackToDestructiveMigration()
             .build()
     }

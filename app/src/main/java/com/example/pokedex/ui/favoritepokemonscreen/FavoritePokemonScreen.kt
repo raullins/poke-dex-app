@@ -1,4 +1,4 @@
-package com.example.pokedex.favoritepokemonscreen
+package com.example.pokedex.ui.favoritepokemonscreen
 
 import android.annotation.SuppressLint
 import android.widget.Toast
@@ -59,10 +59,10 @@ import coil.compose.AsyncImage
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.example.pokedex.R
-import com.example.pokedex.data.local.FavoritePokemon
+//import com.example.pokedex.data.local.FavoritePokemon
 import com.example.pokedex.data.models.PokedexListEntry
-import com.example.pokedex.pokemonlist.PokedexRow
-import com.example.pokedex.pokemonlist.PokemonListViewModel
+import com.example.pokedex.ui.pokemonlist.PokedexRow
+import com.example.pokedex.ui.pokemonlist.PokemonListViewModel
 import com.example.pokedex.ui.theme.RobotoCondensed
 
 @Composable
@@ -124,7 +124,7 @@ fun FavoritePokemonListScreen(
                         .weight(1f)
                         .height(42.dp), // Fazer a SearchBar ocupar o máximo de espaço
                     onSearch = { query ->
-                        viewModel.filterFavoritePokemonList(query)
+//                        viewModel.filterFavoritePokemonList(query)
                     }
                 )
 
@@ -245,7 +245,11 @@ fun PokemonList(
                     // Certifique-se de que apenas carrega mais quando não há filtro aplicado
                     viewModel.loadFavorites()
                 }
-                PokedexRow(rowIndex = index, entries = favoritePokemonList, navController = navController)
+                PokedexRow(
+                    rowIndex = index,
+                    entries = favoritePokemonList,
+                    navController = navController
+                )
             }
         }
     }
@@ -329,11 +333,7 @@ fun PokedexEntry(
                 onCheckedChange = {
                     if (isFavorite) {
                         viewModel.removePokemonFromFavorites(
-                            FavoritePokemon(
-                                entry.number,
-                                entry.pokemonName,
-                                entry.imageUrl
-                            )
+                            entry.pokemonName
                         )
                         isFavorite = !isFavorite
                         Toast.makeText(
@@ -343,12 +343,8 @@ fun PokedexEntry(
                         ).show()
                     } else {
                         viewModel.addPokemonToFavorites(
-                            FavoritePokemon(
-                                entry.number,
-                                entry.pokemonName,
-                                entry.imageUrl
+                            entry.pokemonName,
                             )
-                        )
                         isFavorite = !isFavorite
                         Toast.makeText(
                             context,
